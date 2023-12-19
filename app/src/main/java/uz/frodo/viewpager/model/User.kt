@@ -1,31 +1,16 @@
 package uz.frodo.viewpager.model
 
-import android.os.Parcel
-import android.os.Parcelable
+import java.io.Serializable
 
-class User(var name:String?, var image: ArrayList<String>) :Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.createStringArrayList() ?: arrayListOf()
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(name)
-        parcel.writeList(image)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<User> {
-        override fun createFromParcel(parcel: Parcel): User {
-            return User(parcel)
-        }
-
-        override fun newArray(size: Int): Array<User?> {
-            return arrayOfNulls(size)
-        }
-    }
-
-}
+data class User(
+    val first_name: String,
+    val id: String,
+    val instagram_username: String,
+    val last_name: String,
+    val links: LinksX,
+    val name: String,
+    val portfolio_url: String,
+    val profile_image: ProfileImage,
+    val twitter_username: String,
+    val username: String
+):Serializable

@@ -2,40 +2,32 @@ package uz.frodo.viewpager
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcel
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
+import android.widget.Toast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import uz.frodo.viewpager.adapter.RvAdapter
 import uz.frodo.viewpager.databinding.FragmentMainBinding
-import uz.frodo.viewpager.model.User
-import java.text.FieldPosition
-import kotlin.properties.Delegates
+import uz.frodo.viewpager.model.ComingResult
+import uz.frodo.viewpager.model.ResultX
+import uz.frodo.viewpager.retrofit.Retrofit
+import uz.frodo.viewpager.retrofit.RetrofitService
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MainFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MainFragment : Fragment() {
+class MainFragment : Fragment(),RvAdapter.ItemClick {
     lateinit var binding: FragmentMainBinding
-    // TODO: Rename and change types of parameters
-    lateinit var param1: ArrayList<User>
-    var param2 by Delegates.notNull<Int>()
+    lateinit var tabName: String
+    lateinit var request:Call<ComingResult>
+    lateinit var list:List<ResultX>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getParcelableArrayList(ARG_PARAM1)!!
-            param2 = it.getInt(ARG_PARAM2)
+            tabName = it.getString(ARG_PARAM1)!!
         }
     }
 
@@ -44,13 +36,45 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(layoutInflater)
+        val retrofit = Retrofit.getRetrofit(RetrofitService::class.java)
 
-        binding.rv.adapter = RvAdapter(param1[param2].image,object :RvAdapter.onClick{
-            override fun onClick(position: Int) {
-                val i  = Intent(requireContext(),Image::class.java)
-                i.putExtra("list",param1[param2].image)
-                i.putExtra("position",position)
-                startActivity(i)
+        when(tabName){
+            "ALL" ->{
+                request = retrofit.getPhotos("/",1,30,)
+            }
+            "NEW" ->{
+                request = retrofit.getPhotos("/",1,30,"latest")
+            }
+            "ANIMALS" ->{
+                request = retrofit.getPhotos("animals",1,30,)
+            }
+            "TECHNOLOGY" ->{
+                request = retrofit.getPhotos("technology",1,30,)
+            }
+            "NATURE" ->{
+                request = retrofit.getPhotos("nature",1,30,)
+            }
+            else -> {
+                Toast.makeText(requireContext(), "Else", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        request.enqueue(object :Callback<ComingResult>{
+            override fun onResponse(call: Call<ComingResult>, response: Response<ComingResult>) {
+                if (response.isSuccessful && response.body() != null){
+                    val adapter = RvAdapter(this@MainFragment)
+                    list = response.body()!!.results
+                    adapter.submitList(list)
+                    binding.rv.adapter = adapter
+                }else{
+                    Toast.makeText(requireContext(), "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+                binding.progressBar.visibility = View.GONE
+            }
+
+            override fun onFailure(call: Call<ComingResult>, t: Throwable) {
+                Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show()
+                binding.progressBar.visibility = View.GONE
             }
         })
 
@@ -58,11 +82,10 @@ class MainFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(param1: ArrayList<User>,param2:Int) =
+        fun newInstance(tabName: String) =
             MainFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelableArrayList(ARG_PARAM1, param1)
-                    putInt(ARG_PARAM2,param2)
+                    putString(ARG_PARAM1, tabName)
                 }
             }
         var current = 0
@@ -72,5 +95,11 @@ class MainFragment : Fragment() {
         super.onStart()
         println(current)
         binding.rv.scrollToPosition(current)
+    }
+
+    override fun onItemClick(resultX: ResultX) {
+        val intent = Intent(requireContext(),Image::class.java)
+        intent.putExtra("photo",resultX)
+        startActivity(intent)
     }
 }

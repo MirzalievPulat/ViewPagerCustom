@@ -2,10 +2,9 @@ package uz.frodo.viewpager
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.core.os.bundleOf
-import uz.frodo.viewpager.adapter.ImageAdapter
+import com.squareup.picasso.Picasso
 import uz.frodo.viewpager.databinding.ActivityImageBinding
-import uz.frodo.viewpager.model.User
+import uz.frodo.viewpager.model.ResultX
 
 class Image : AppCompatActivity() {
     lateinit var binding: ActivityImageBinding
@@ -14,17 +13,10 @@ class Image : AppCompatActivity() {
         binding = ActivityImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val list = intent.getStringArrayListExtra("list")
-        val position = intent.getIntExtra("position",-1)
+        val resultX = intent.getSerializableExtra("photo") as ResultX
 
-        binding.imagePager.adapter = ImageAdapter(list!!)
-        binding.imagePager.currentItem = position
-
+        Picasso.get().load(resultX.urls.regular).into(binding.itemImage)
 
     }
 
-    override fun onPause() {
-        super.onPause()
-        MainFragment.current = binding.imagePager.currentItem
-    }
 }

@@ -5,43 +5,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="#141725">
+    android:background="@color/main">
 
-    <TextView
-        android:id="@+id/tvHome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Home"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:textSize="20sp"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Home"
+        app:titleTextColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab"
-        app:tabMode="scrollable"
-        android:background="#141725"
-        app:tabIndicatorHeight="0dp"
-        app:tabRippleColor="@null"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:id="@+id/home_tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/tvHome"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/main"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:tabIndicatorColor="@color/pink"
+        app:tabIndicator="@drawable/tab_indicator_selected"
+        app:tabIndicatorHeight="15dp"
+        app:tabMinWidth="10dp"
+        app:tabMode="scrollable"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabTextColor="#838181"
+        app:tabTextAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
+        app:tabSelectedTextColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tab" />
+        app:layout_constraintTop_toBottomOf="@+id/home_tab" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
